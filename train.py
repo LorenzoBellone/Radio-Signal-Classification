@@ -18,7 +18,7 @@ def main(args):
 
     if os.path.exists("./weights") is False:
         os.makedirs("./weights")
-    tb_writer = SummaryWriter(log_dir='./runs/' + args.model + '/' + time.strftime('%m-%d_%H.%M', time.localtime()))
+    tb_writer = SummaryWriter(log_dir='./runs/' + args.model_name + '/' + time.strftime('%m-%d_%H.%M', time.localtime()))
     # 获得数据所在的文件路径
     data_dir = os.path.dirname(os.path.abspath(args.data_path))
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
@@ -100,13 +100,14 @@ def main(args):
         tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["lr"], epoch)
 
         if best_acc < val_acc:
-            torch.save(net.state_dict(), "./weights/" + args.model + ".pth")
+            torch.save(net.state_dict(), "./weights/" + args.model_name + ".pth")
             best_acc = val_acc
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='convnext', help='convnext or vision_transformer')  # 默认使用convnext网络
+    parser.add_argument('--model', type=str, default='convnext', help='convnext or vision_transformer')
+    parser.add_argument('--model_name', type=str, default='convnext', help='name of the model containing the weights')
     parser.add_argument('--snr', type=int, default=30)
     parser.add_argument('--num-classes', type=int, default=24)
     parser.add_argument('--epochs', type=int, default=16)
