@@ -95,6 +95,8 @@ class Block(nn.Module):
         x = self.dwconv(x)
         # x = x.permute(0, 2, 3, 1)  # [N, C, H, W] -> [N, H, W, C]
         x = self.norm(x)
+        if len(x.shape)==2:
+            x = torch.unsqueeze(x, dim=0)
         x = x.permute(0, 2, 1)
         x = self.pwconv1(x)
         x = self.act(x)
