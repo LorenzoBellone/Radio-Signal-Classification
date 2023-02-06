@@ -24,9 +24,9 @@ class MyDataSet(Dataset):
 
         # 此操作将数据转成(32, 32, 2)，通道1是I信号，通道2是Q信号。执行此操作需要调整model中的卷积核及其它参数。
         signal1 = np.reshape(signal[:, 0], [32, 32])
-        signal1 = np.expand_dims(signal, axis=2)
+        signal1 = np.expand_dims(signal1, axis=2)
         signal2 = np.reshape(signal[:, 1], [32, 32])
-        signal2 = np.expand_dims(signal, axis=2)
+        signal2 = np.expand_dims(signal2, axis=2)
         signal = np.concatenate((signal1, signal2), axis=2)
 
         label = self.mod_class[item]
