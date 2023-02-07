@@ -15,17 +15,13 @@ class ConvNet(nn.Module):
         
         # The other layers are fully connected, with the output dimension that is
         # equal to the number of possible actions we can have.
-        self.layer2 = nn.Linear(int(state_dim)*int(state_dim)*25, 500)
-        
-        self.output = nn.Linear(500, num_classes) 
+        self.layer2 = nn.Linear(int(state_dim)*int(state_dim)*25, num_classes)
         
     
     def forward(self, x1):
         out = self.layer1(x1)
         out = out.reshape(out.size(0), -1)
-        out = F.relu(self.layer2(out))
-        
-        out = self.output(out)
+        out = self.layer2(out)
 
         return out
 
