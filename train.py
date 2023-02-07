@@ -48,12 +48,14 @@ def main(args):
     train_dataset = MyDataSet(hdf5_path=args.data_path,
                               mod_class=train_labels,
                               indexes=train_indexes,
+                              model=args.model,
                               transform=data_transform["train"])
 
     # 实例化验证数据集
     val_dataset = MyDataSet(hdf5_path=args.data_path,
                             mod_class=val_labels,
                             indexes=val_indexes,
+                            model=args.model,
                             transform=data_transform["val"])
 
     nw = min([os.cpu_count(), args.batch_size if args.batch_size > 1 else 0, 8])  # number of workers
