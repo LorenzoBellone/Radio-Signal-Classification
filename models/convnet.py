@@ -3,30 +3,42 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ConvNet(nn.Module):
-    def __init__(self, state_dim=32, num_classes=24):
+    def __init__(self, state_dim=32, num_classes=24, L=1, C=25):
         super(ConvNet, self).__init__()
         # The first layer is made of 1 sequential convolution + ReLU step. The output is then flattened.
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2, 25, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(25, 25, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
+            nn.Conv2d(2, C, kernel_size=3, stride=1, padding=1),
+            nn.ReLU()
         )
+
+        self.conv_layers = []
+        for i in range(L-1):
+            self.conv_layers.append(
+                nn.Sequential(
+                nn.Conv2d(C, C, kernel_size=3, stride=1, padding=1),
+                nn.ReLU()
+                )
+            )
         
         # The other layers are fully connected, with the output dimension that is
         # equal to the number of possible actions we can have.
-        self.layer2 = nn.Linear(int(state_dim)*int(state_dim)*25, num_classes)
+        self.output_layer = nn.Linear(int(state_dim)*int(state_dim)*C, num_classes)
+        self.L = L
         
     
     def forward(self, x1):
         out = self.layer1(x1)
+        for i in range(self.L-1):
+            out = self.conv_layers[i](out)
         out = out.reshape(out.size(0), -1)
-        out = self.layer2(out)
+        out = self.output_layer(out)
 
         return out
 
 
 def net(num_classes: int):
     model = ConvNet(state_dim=32,
-                    num_classes=num_classes)
+                    num_classes=num_classes,
+                    L=1,
+                    C=25)
     return model
