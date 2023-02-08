@@ -11,7 +11,7 @@ class ConvNet(nn.Module):
             nn.ReLU()
         )
 
-        self.conv_layers = []
+        self.conv_layers = nn.ModuleList()
         for i in range(L-1):
             self.conv_layers.append(
                 nn.Sequential(
