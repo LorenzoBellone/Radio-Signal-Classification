@@ -36,9 +36,9 @@ class ConvNet(nn.Module):
         return out
 
 
-def net(num_classes: int):
+def net(num_classes: int, L=1, C=25):
     model = ConvNet(state_dim=32,
                     num_classes=num_classes,
-                    L=1,
-                    C=25)
+                    L=L,
+                    C=C)
     return model
