@@ -74,6 +74,8 @@ def main(args):
     model = import_module('models.' + args.model)
     if args.model == "convnet":
         net = model.net(num_classes=args.num_classes, L=args.L, C=args.C).to(device)
+    elif args.model == "convnetBN":
+        net = model.netBN(num_classes=args.num_classes, L=args.L, C=args.C).to(device)
     else:
         net = model.net(num_classes=args.num_classes).to(device)
     pg = get_params_groups(net, weight_decay=args.wd)
