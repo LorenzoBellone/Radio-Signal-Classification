@@ -22,7 +22,7 @@ def main(args):
     # 获得数据所在的文件路径
     data_dir = os.path.dirname(os.path.abspath(args.data_path))
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
-    reload_data = True  # 设置是否重新加载数据集
+    reload_data = False  # 设置是否重新加载数据集
     if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
         with open(data_dir + '/train_indexes.json') as f:
             train_indexes = json.load(f)
