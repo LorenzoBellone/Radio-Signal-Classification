@@ -16,9 +16,9 @@ def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     print(f"using {device} device...")
 
-    if os.path.exists("./weights") is False:
-        os.makedirs("./weights")
-    tb_writer = SummaryWriter(log_dir='./runs/' + args.model_name + '/' + time.strftime('%m-%d_%H.%M', time.localtime()))
+    if os.path.exists(f"./weights/{args.model}_{args.L}_{args.C}/") is False:
+        os.makedirs(f"./weights/{args.model}_{args.L}_{args.C}/")
+    tb_writer = SummaryWriter(log_dir=f'./runs/{args.model}_{args.L}_{args.C}/' + args.model_name + '/')
     # 获得数据所在的文件路径
     data_dir = os.path.dirname(os.path.abspath(args.data_path))
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
@@ -72,7 +72,10 @@ def main(args):
                                              pin_memory=True,
                                              num_workers=nw)
     model = import_module('models.' + args.model)
-    net = model.net(num_classes=args.num_classes).to(device)
+    if args.model == "convnet":
+        net = model.net(num_classes=args.num_classes, L=args.L, C=args.C).to(device)
+    else:
+        net = model.net(num_classes=args.num_classes).to(device)
     pg = get_params_groups(net, weight_decay=args.wd)
     optimizer = optim.AdamW(pg, lr=args.lr, weight_decay=args.wd)
     lr_scheduler = create_lr_scheduler(optimizer, len(train_loader), args.epochs,
@@ -102,13 +105,15 @@ def main(args):
         tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["lr"], epoch)
 
         if best_acc < val_acc:
-            torch.save(net.state_dict(), "./weights/" + args.model_name + ".pth")
+            torch.save(net.state_dict(), f"./weights/{args.model}_{args.L}_{args.C}/" + args.model_name + ".pth")
             best_acc = val_acc
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='convnext', help='convnext or vision_transformer')
+    parser.add_argument('--model', type=str, default='convnext', help='convnext, vision_transformer, or convnet')
+    parser.add_argument('--L', type=int, default=1, help='Number of convolutional layers')
+    parser.add_argument('--C', type=int, default=25, help='Number of filters per convolutional layer')
     parser.add_argument('--model_name', type=str, default='convnext', help='name of the model containing the weights')
     parser.add_argument('--snr', type=int, default=30)
     parser.add_argument('--num-classes', type=int, default=24)
