@@ -71,7 +71,7 @@ def main(args):
                                              shuffle=False,
                                              pin_memory=True,
                                              num_workers=nw)
-    model = import_module('models.' + args.model[:-2])
+    model = import_module('models.' + args.model[:7])
     if args.model == "convnet":
         net = model.net(num_classes=args.num_classes, L=args.L, C=args.C).to(device)
     elif args.model == "convnetBN":
