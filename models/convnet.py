@@ -46,7 +46,7 @@ def net(num_classes: int, L=1, C=25):
 
 class ConvNetBN(nn.Module):
     def __init__(self, state_dim=32, num_classes=24, L=1, C=25):
-        super(ConvNet, self).__init__()
+        super(ConvNetBN, self).__init__()
         # The first layer is made of 1 sequential convolution + ReLU step. The output is then flattened.
         self.layer1 = nn.Sequential(
             nn.Conv2d(2, C, kernel_size=3, stride=1, padding=1),
