@@ -76,13 +76,13 @@ def split_data(root: str, snr: int, ratio: list, test: bool = False, one_hot: bo
         json_train_label = json.dumps(train_label)
         json_val_indexes = json.dumps(val_indexes)
         json_val_label = json.dumps(val_label)
-        with open(data_dir + '/train_indexes.json', 'w') as json_file:
+        with open(data_dir + f'/train_indexes{snr}.json', 'w') as json_file:
             json_file.write(json_train_indexes)
-        with open(data_dir + '/train_label.json', 'w') as json_file:
+        with open(data_dir + f'/train_label{snr}.json', 'w') as json_file:
             json_file.write(json_train_label)
-        with open(data_dir + '/val_indexes.json', 'w') as json_file:
+        with open(data_dir + f'/val_indexes{snr}.json', 'w') as json_file:
             json_file.write(json_val_indexes)
-        with open(data_dir + '/val_label.json', 'w') as json_file:
+        with open(data_dir + f'/val_label{snr}.json', 'w') as json_file:
             json_file.write(json_val_label)
         return train_indexes, train_label, val_indexes, val_label
 
