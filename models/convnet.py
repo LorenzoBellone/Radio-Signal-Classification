@@ -68,7 +68,11 @@ class ConvNetBN(nn.Module):
 
         # The other layers are fully connected, with the output dimension that is
         # equal to the number of possible actions we can have.
-        self.output_layer = nn.Linear(int(state_dim)*int(state_dim)*C, num_classes)
+        self.linear1 = nn.Sequential(
+            nn.Linear(int(state_dim)*int(state_dim)*C, 1000),
+            nn.ReLU()
+        )
+        self.output_layer = nn.Linear(1000, num_classes)
         self.L = L
         
     
@@ -78,7 +82,10 @@ class ConvNetBN(nn.Module):
             out = self.conv_layers[i](out)
         out = out.reshape(out.size(0), -1)
         out = self.drop(out)
+        out = self.linear1(out)
         out = self.output_layer(out)
+
+        out = nn.Sigmoid(out)
 
         return out
 
