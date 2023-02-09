@@ -73,6 +73,7 @@ class ConvNetBN(nn.Module):
             nn.ReLU()
         )
         self.output_layer = nn.Linear(1000, num_classes)
+        self.out_act = nn.Sigmoid()
         self.L = L
         
     
@@ -85,7 +86,7 @@ class ConvNetBN(nn.Module):
         out = self.linear1(out)
         out = self.output_layer(out)
 
-        out = nn.Sigmoid(out)
+        out = self.out_act(out)
 
         return out
 
