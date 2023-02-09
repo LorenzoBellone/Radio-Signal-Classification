@@ -130,4 +130,8 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
+    print("------------------------------------------------------------------")
+    print(f"Training with model {opt.model}_{opt.L}_{opt.C} for snr {opt.snr}")
+    print("------------------------------------------------------------------")
+
     main(opt)
