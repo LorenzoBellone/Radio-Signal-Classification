@@ -24,13 +24,13 @@ def main(args):
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
     reload_data = True  # 设置是否重新加载数据集
     if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
-        with open(data_dir + '/train_indexes.json') as f:
+        with open(data_dir + f'/train_indexes{args.snr}.json') as f:
             train_indexes = json.load(f)
-        with open(data_dir + '/train_label.json') as f:
+        with open(data_dir + f'/train_label{args.snr}.json') as f:
             train_labels = json.load(f)
-        with open(data_dir + '/val_indexes.json') as f:
+        with open(data_dir + f'/val_indexes{args.snr}.json') as f:
             val_indexes = json.load(f)
-        with open(data_dir + '/val_label.json') as f:
+        with open(data_dir + f'/val_label{args.snr}.json') as f:
             val_labels = json.load(f)
     else:
         # 不分配测试集, 如果修改了ratio参数，需要修改reload_data为True重新加载一次数据集
