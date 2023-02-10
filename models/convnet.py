@@ -79,7 +79,6 @@ class ConvNetBN(nn.Module):
         for i in range(self.L-1):
             out = self.conv_layers[i](out)
         out = out.reshape(out.size(0), -1)
-        out = self.drop(out)
         out = self.linear1(out)
         out = self.output_layer(out)
         
