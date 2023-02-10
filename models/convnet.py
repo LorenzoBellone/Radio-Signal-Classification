@@ -49,7 +49,7 @@ class ConvNetBN(nn.Module):
         super(ConvNetBN, self).__init__()
         # The first layer is made of 1 sequential convolution + ReLU step. The output is then flattened.
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2, C, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(2, C, kernel_size=3, stride=1),
             nn.BatchNorm2d(C),
             nn.ReLU()
         )
@@ -58,21 +58,19 @@ class ConvNetBN(nn.Module):
         for i in range(L-1):
             self.conv_layers.append(
                 nn.Sequential(
-                nn.Conv2d(C, C, kernel_size=3, stride=1, padding=1),
+                nn.Conv2d(C, C, kernel_size=3, stride=1),
                 nn.BatchNorm2d(C),
                 nn.ReLU()
                 )
             )
         
-        self.drop = nn.Dropout(p=0.3)
-
         # The other layers are fully connected, with the output dimension that is
         # equal to the number of possible actions we can have.
         self.linear1 = nn.Sequential(
-            nn.Linear(int(state_dim)*int(state_dim)*C, 1000),
+            nn.Linear(int(state_dim-2*L)*int(state_dim-2*L)*C, 500),
             nn.ReLU()
         )
-        self.output_layer = nn.Linear(1000, num_classes)
+        self.output_layer = nn.Linear(500, num_classes)
         self.L = L
         
     
