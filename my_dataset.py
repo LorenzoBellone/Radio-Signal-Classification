@@ -66,7 +66,7 @@ class MyHisarDataSet(Dataset):
             signal2 = np.expand_dims(signal2, axis=2)
             signal = np.concatenate((signal1, signal2), axis=2)
 
-        label = self.mod_class[item]
+        label = self.mod_class.iloc[item].item()
         if self.transform is not None:
             signal = self.transform(signal)
 
