@@ -1,13 +1,13 @@
 import json
 import os
-import time
+import pandas as pd
 import argparse
 import torch
 import torch.utils.data
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
-from my_dataset import MyDataSet
+from my_dataset import MyDataSet, MyHisarDataSet
 from utils import split_data, create_lr_scheduler, get_params_groups, train_one_epoch, evaluate
 from importlib import import_module
 
@@ -22,54 +22,55 @@ def main(args):
     # 获得数据所在的文件路径
     data_dir = os.path.dirname(os.path.abspath(args.data_path))
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
-    reload_data = True  # 设置是否重新加载数据集
-    if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
-        with open(data_dir + f'/train_indexes{args.snr}.json') as f:
-            train_indexes = json.load(f)
-        with open(data_dir + f'/train_label{args.snr}.json') as f:
-            train_labels = json.load(f)
-        with open(data_dir + f'/val_indexes{args.snr}.json') as f:
-            val_indexes = json.load(f)
-        with open(data_dir + f'/val_label{args.snr}.json') as f:
-            val_labels = json.load(f)
-    else:
-        # 不分配测试集, 如果修改了ratio参数，需要修改reload_data为True重新加载一次数据集
-        train_indexes, train_labels, val_indexes, val_labels = split_data(args.data_path, args.snr,
-                                                                          ratio=[0.875, 0.125, 0.],
-                                                                          test=False, one_hot=False)
-    print("using train data size: {}".format(len(train_labels)))
-    print("using valid data size: {}".format(len(val_labels)))
+    # reload_data = True  # 设置是否重新加载数据集
+    # if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
+    #     with open(data_dir + f'/train_indexes{args.snr}.json') as f:
+    #         train_indexes = json.load(f)
+    #     with open(data_dir + f'/train_label{args.snr}.json') as f:
+    #         train_labels = json.load(f)
+    #     with open(data_dir + f'/val_indexes{args.snr}.json') as f:
+    #         val_indexes = json.load(f)
+    #     with open(data_dir + f'/val_label{args.snr}.json') as f:
+    #         val_labels = json.load(f)
+    # else:
+    #     # 不分配测试集, 如果修改了ratio参数，需要修改reload_data为True重新加载一次数据集
+    #     train_indexes, train_labels, val_indexes, val_labels = split_data(args.data_path, args.snr,
+    #                                                                       ratio=[0.875, 0.125, 0.],
+    #                                                                       test=False, one_hot=False)
+    # print("using train data size: {}".format(len(train_labels)))
+    # print("using valid data size: {}".format(len(val_labels)))
+    snrs_train = pd.read_csv(f'{data_dir}/Train/train_snr.csv', header=None)
+    train_indexes = snrs_train[snrs_train[0]==args.snr].index.tolist()
     data_transform = {
         "train": transforms.Compose([transforms.ToTensor()]),
         "val": transforms.Compose([transforms.ToTensor()])
     }
 
     # 实例化训练数据集
-    train_dataset = MyDataSet(hdf5_path=args.data_path,
-                              mod_class=train_labels,
-                              indexes=train_indexes,
-                              model=args.model,
-                              transform=data_transform["train"])
+    train_dataset = MyHisarDataSet(hdf5_path='complex_train_snr0.h5',
+                              labels_path=f'{data_dir}/Train/train_labels.csv',
+                              indexes=train_indexes)
+
+    snrs_test = pd.read_csv(f'{data_dir}/Test/test_snr.csv', header=None)
+    test_indexes = snrs_test[snrs_test[0]==args.snr].index.tolist()
 
     # 实例化验证数据集
-    val_dataset = MyDataSet(hdf5_path=args.data_path,
-                            mod_class=val_labels,
-                            indexes=val_indexes,
-                            model=args.model,
-                            transform=data_transform["val"])
+    val_dataset = MyHisarDataSet(hdf5_path='complex_test.h5',
+                            labels_path=f'{data_dir}/Test/test_labels.csv',
+                            indexes=test_indexes)
 
     nw = min([os.cpu_count(), args.batch_size if args.batch_size > 1 else 0, 8])  # number of workers
     print('Using {} dataloader workers every process'.format(nw))
     train_loader = torch.utils.data.DataLoader(train_dataset,
                                                batch_size=args.batch_size,
                                                shuffle=True,
-                                               pin_memory=True,
+                                               pin_memory=False,
                                                num_workers=nw)
 
     val_loader = torch.utils.data.DataLoader(val_dataset,
                                              batch_size=args.batch_size,
                                              shuffle=False,
-                                             pin_memory=True,
+                                             pin_memory=False,
                                              num_workers=nw)
     model = import_module('models.' + args.model[:args.model.index('t')+1])
     if args.model == "convnet":
