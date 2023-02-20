@@ -54,8 +54,8 @@ class MyHisarDataSet(Dataset):
         index = self.indexes[item]
         sample = self.df_test[index]
 
-        real = signal.apply(lambda x: x.real)
-        imag = signal.apply(lambda x: x.imag)
+        real = sample.apply(lambda x: x.real)
+        imag = sample.apply(lambda x: x.imag)
 
         signal = np.array([real, imag]).T
 
