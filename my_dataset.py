@@ -41,7 +41,6 @@ class MyHisarDataSet(Dataset):
 
     def __init__(self, hdf5_path: str, labels_path: list, indexes: list, model='convnext', transform=None):
         self.df_test = pd.read_hdf(hdf5_path)
-        self.df_test = self.df_test.T
         self.indexes = indexes
         self.mod_class = pd.read_csv(labels_path, header=None)
         with open('../HisarMod2019.1/class_indices.json', 'r') as f:
@@ -53,9 +52,12 @@ class MyHisarDataSet(Dataset):
         return len(self.indexes)
 
     def __getitem__(self, item):
-
-        index = self.indexes[item]
-        sample = self.df_test[index]
+        
+        if len(self.mod_class) == len(self.df_test):
+            index = self.indexes[item]
+            sample = self.df_test.iloc[index]
+        else:
+            sample = self.df_test.iloc[item]
 
         real = sample.apply(lambda x: np.single(x.real))
         imag = sample.apply(lambda x: np.single(x.imag))
@@ -68,8 +70,8 @@ class MyHisarDataSet(Dataset):
             signal2 = np.reshape(signal[:, 1], [32, 32])
             signal2 = np.expand_dims(signal2, axis=2)
             signal = np.concatenate((signal1, signal2), axis=2)
-
-        label = self.mod_class.iloc[item].item()
+        
+        label = self.mod_class.iloc[self.indexes[item]].item()
         label = int(self.class_idx[str(label)])
         if self.transform is not None:
             signal = self.transform(signal)
