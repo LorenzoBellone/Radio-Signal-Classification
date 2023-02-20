@@ -49,8 +49,7 @@ def main(args):
     # 实例化训练数据集
     train_dataset = MyHisarDataSet(hdf5_path='complex_train_snr0.h5',
                               labels_path=f'{data_dir}/Train/train_labels.csv',
-                              indexes=train_indexes,
-                              transform=data_transform['train'])
+                              indexes=train_indexes)
 
     snrs_test = pd.read_csv(f'{data_dir}/Test/test_snr.csv', header=None)
     test_indexes = snrs_test[snrs_test[0]==args.snr].index.tolist()
@@ -58,8 +57,7 @@ def main(args):
     # 实例化验证数据集
     val_dataset = MyHisarDataSet(hdf5_path='complex_test.h5',
                             labels_path=f'{data_dir}/Test/test_labels.csv',
-                            indexes=test_indexes,
-                            transform=data_transform['val'])
+                            indexes=test_indexes)
 
     nw = min([os.cpu_count(), args.batch_size if args.batch_size > 1 else 0, 8])  # number of workers
     print('Using {} dataloader workers every process'.format(nw))
