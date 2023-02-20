@@ -1,10 +1,10 @@
 from torch.utils.data import Dataset
 import numpy as np
+import pandas as pd
 import h5py
 
 
 class MyDataSet(Dataset):
-    """自定义数据集"""
 
     def __init__(self, hdf5_path: str, mod_class: list, indexes: list, model='convnext', transform=None):
         self.hdf5_path = hdf5_path
@@ -24,7 +24,42 @@ class MyDataSet(Dataset):
             signal = x[index]
 
         if "convnet" in self.model:
-            # 此操作将数据转成(32, 32, 2)，通道1是I信号，通道2是Q信号。执行此操作需要调整model中的卷积核及其它参数。
+            signal1 = np.reshape(signal[:, 0], [32, 32])
+            signal1 = np.expand_dims(signal1, axis=2)
+            signal2 = np.reshape(signal[:, 1], [32, 32])
+            signal2 = np.expand_dims(signal2, axis=2)
+            signal = np.concatenate((signal1, signal2), axis=2)
+
+        label = self.mod_class[item]
+        if self.transform is not None:
+            signal = self.transform(signal)
+
+        return signal, label
+
+class MyHisarDataSet(Dataset):
+
+    def __init__(self, hdf5_path: str, labels_path: list, indexes: list, model='convnext', transform=None):
+        self.df_test = pd.read_hdf(hdf5_path)
+        self.df_test = self.df_test.T
+        self.indexes = indexes
+        self.mod_class = pd.read_csv(labels_path)
+        self.transform = transform
+        self.model = model
+
+    def __len__(self):
+        return len(self.indexes)
+
+    def __getitem__(self, item):
+
+        index = self.indexes[item]
+        sample = self.df_test[index]
+
+        real = signal.apply(lambda x: x.real)
+        imag = signal.apply(lambda x: x.imag)
+
+        signal = np.array([real, imag]).T
+
+        if "convnet" in self.model:
             signal1 = np.reshape(signal[:, 0], [32, 32])
             signal1 = np.expand_dims(signal1, axis=2)
             signal2 = np.reshape(signal[:, 1], [32, 32])
