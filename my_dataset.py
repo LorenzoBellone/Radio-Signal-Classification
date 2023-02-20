@@ -62,7 +62,7 @@ class MyHisarDataSet(Dataset):
         real = sample.apply(lambda x: np.single(x.real))
         imag = sample.apply(lambda x: np.single(x.imag))
 
-        signal = np.array([real, imag], dtype=np.single).T
+        signal = np.array([real, imag], dtype=np.single, ndmin=3).T
 
         if "convnet" in self.model:
             signal1 = np.reshape(signal[:, 0], [32, 32])
