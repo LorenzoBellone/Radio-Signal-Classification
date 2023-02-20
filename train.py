@@ -20,7 +20,7 @@ def main(args):
         os.makedirs(f"./weights/{args.model}_{args.L}_{args.C}/")
     tb_writer = SummaryWriter(log_dir=f'./runs/{args.model}_{args.L}_{args.C}/' + args.model_name + '/')
     # 获得数据所在的文件路径
-    data_dir = os.path.dirname(os.path.abspath(args.data_path))
+    data_dir = os.path.abspath(args.data_path)
     # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
     # reload_data = True  # 设置是否重新加载数据集
     # if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
