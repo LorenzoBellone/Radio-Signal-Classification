@@ -30,7 +30,12 @@ class ConvNet(nn.Module):
         out = self.layer1(x1)
         for i in range(self.L-1):
             out = self.conv_layers[i](out)
-        out = out.reshape(out.size(0), -1)
+            
+        if len(out.shape) == 4:
+            out = out.reshape(out.size(0),-1)
+        elif len(out.shape) == 3:
+            out = out.reshape((-1,))
+            
         out = self.output_layer(out)
 
         return out

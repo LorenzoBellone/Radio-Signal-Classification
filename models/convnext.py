@@ -95,6 +95,8 @@ class Block(nn.Module):
         x = self.dwconv(x)
         # x = x.permute(0, 2, 3, 1)  # [N, C, H, W] -> [N, H, W, C]
         x = self.norm(x)
+        if len(x.shape)==2:
+            x = torch.unsqueeze(x, dim=0)
         x = x.permute(0, 2, 1)
         x = self.pwconv1(x)
         x = self.act(x)
@@ -176,7 +178,7 @@ class ConvNeXt(nn.Module):
 def net(num_classes: int):
     model = ConvNeXt(in_chans=1,
                      depths=[3, 3, 9, 3],
-                     dims=[32, 64, 128, 256],
+                     dims=[16, 32, 64, 128],
                      slens=[1024, 256, 64, 16],
                      num_classes=num_classes)
     return model
