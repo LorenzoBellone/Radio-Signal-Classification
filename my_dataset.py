@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import numpy as np
 import pandas as pd
+import json
 import h5py
 
 
@@ -42,7 +43,9 @@ class MyHisarDataSet(Dataset):
         self.df_test = pd.read_hdf(hdf5_path)
         self.df_test = self.df_test.T
         self.indexes = indexes
-        self.mod_class = pd.read_csv(labels_path)
+        self.mod_class = pd.read_csv(labels_path, header=None)
+        with open('../HisarMod2019.1/class_indices.json', 'r') as f:
+            self.class_idx = json.load(f)
         self.transform = transform
         self.model = model
 
@@ -54,10 +57,10 @@ class MyHisarDataSet(Dataset):
         index = self.indexes[item]
         sample = self.df_test[index]
 
-        real = sample.apply(lambda x: x.real)
-        imag = sample.apply(lambda x: x.imag)
+        real = sample.apply(lambda x: np.single(x.real))
+        imag = sample.apply(lambda x: np.single(x.imag))
 
-        signal = np.array([real, imag]).T
+        signal = np.array([real, imag], dtype=np.single).T
 
         if "convnet" in self.model:
             signal1 = np.reshape(signal[:, 0], [32, 32])
@@ -67,6 +70,7 @@ class MyHisarDataSet(Dataset):
             signal = np.concatenate((signal1, signal2), axis=2)
 
         label = self.mod_class.iloc[item].item()
+        label = int(self.class_idx[str(label)])
         if self.transform is not None:
             signal = self.transform(signal)
 
