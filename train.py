@@ -21,41 +21,24 @@ def main(args):
     tb_writer = SummaryWriter(log_dir=f'./runs/{args.model}_{args.L}_{args.C}/' + args.model_name + '/')
     # 获得数据所在的文件路径
     data_dir = os.path.abspath(args.data_path)
-    # train_indexes, train_labels, val_indexes, val_labels都是list，存储的是索引值
-    # reload_data = True  # 设置是否重新加载数据集
-    # if os.path.exists(data_dir + '/train_indexes.json') and not reload_data:
-    #     with open(data_dir + f'/train_indexes{args.snr}.json') as f:
-    #         train_indexes = json.load(f)
-    #     with open(data_dir + f'/train_label{args.snr}.json') as f:
-    #         train_labels = json.load(f)
-    #     with open(data_dir + f'/val_indexes{args.snr}.json') as f:
-    #         val_indexes = json.load(f)
-    #     with open(data_dir + f'/val_label{args.snr}.json') as f:
-    #         val_labels = json.load(f)
-    # else:
-    #     # 不分配测试集, 如果修改了ratio参数，需要修改reload_data为True重新加载一次数据集
-    #     train_indexes, train_labels, val_indexes, val_labels = split_data(args.data_path, args.snr,
-    #                                                                       ratio=[0.875, 0.125, 0.],
-    #                                                                       test=False, one_hot=False)
-    # print("using train data size: {}".format(len(train_labels)))
-    # print("using valid data size: {}".format(len(val_labels)))
+
     snrs_train = pd.read_csv(f'{data_dir}/Train/train_snr.csv', header=None)
     train_indexes = snrs_train[snrs_train[0]==args.snr].index.tolist()
-    data_transform = {
-        "train": transforms.Compose([transforms.ToTensor()]),
-        "val": transforms.Compose([transforms.ToTensor()])
-    }
+
+    print("using train data size: {}".format(len(train_indexes)))
 
     # 实例化训练数据集
-    train_dataset = MyHisarDataSet(hdf5_path='complex_train_snr0.h5',
+    train_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Train/complex_train_snr{args.snr}.h5',
                               labels_path=f'{data_dir}/Train/train_labels.csv',
                               indexes=train_indexes)
 
     snrs_test = pd.read_csv(f'{data_dir}/Test/test_snr.csv', header=None)
     test_indexes = snrs_test[snrs_test[0]==args.snr].index.tolist()
 
+    print("using valid data size: {}".format(len(test_indexes)))
+
     # 实例化验证数据集
-    val_dataset = MyHisarDataSet(hdf5_path='complex_test.h5',
+    val_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Test/complex_test_snr{args.snr}.h5',
                             labels_path=f'{data_dir}/Test/test_labels.csv',
                             indexes=test_indexes)
 
@@ -119,7 +102,7 @@ if __name__ == '__main__':
     parser.add_argument('--C', type=int, default=25, help='Number of filters per convolutional layer')
     parser.add_argument('--model_name', type=str, default='convnext', help='name of the model containing the weights')
     parser.add_argument('--snr', type=int, default=30)
-    parser.add_argument('--num-classes', type=int, default=24)
+    parser.add_argument('--num-classes', type=int, default=26)
     parser.add_argument('--epochs', type=int, default=16)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=5e-4)
