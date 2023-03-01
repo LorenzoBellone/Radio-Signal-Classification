@@ -10,7 +10,7 @@ from tqdm import tqdm
 import json
 
 
-def split_data(root: str, snr: int, ratio: list, test: bool = False, one_hot: bool = False):
+def split_data(root: str, snr: int, ratio: list, test: bool = False, one_hot: bool = False, seed: int = 0):
     # 合法检测 ################
     if len(ratio) != 3:
         ratio = [0.7, 0.1, 0.2]
@@ -20,7 +20,7 @@ def split_data(root: str, snr: int, ratio: list, test: bool = False, one_hot: bo
     assert list_sum == 1, "ratio 列表和必须为1."
     ##########################
 
-    random.seed(0)  # 保证随机结果可复现
+    random.seed(seed)  # 保证随机结果可复现
     assert os.path.exists(root), "dataset root: {} does not exist.".format(root)
     f = h5py.File(root, 'r')
     y, z = f['Y'], f['Z']

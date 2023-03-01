@@ -124,6 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=5e-4)
     parser.add_argument('--wd', type=float, default=5e-2)
     parser.add_argument('--device', default='cuda:0', help='device id (i.e. 0 or 0,1 or cpu)')
+    parser.add_argument('--seed', type=int, default=0, help='random seed for network initialization')
     # 数据集目录全称
     parser.add_argument('--data-path', type=str,
                         default="./data/2018/GOLD_XYZ_OSC.hdf5")  # hdf5.File()读取文件不支持相对路径
