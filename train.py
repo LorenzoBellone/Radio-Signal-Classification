@@ -28,7 +28,7 @@ def main(args):
     print("using train data size: {}".format(len(train_indexes)))
 
     # 实例化训练数据集
-    train_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Train/complex_train_snr{args.snr}.h5',
+    train_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Train/complex_train/complex_train_snr{args.snr}.h5',
                               labels_path=f'{data_dir}/Train/train_labels.csv',
                               indexes=train_indexes)
 
@@ -38,7 +38,7 @@ def main(args):
     print("using valid data size: {}".format(len(test_indexes)))
 
     # 实例化验证数据集
-    val_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Test/complex_test_snr{args.snr}.h5',
+    val_dataset = MyHisarDataSet(hdf5_path=f'{data_dir}/Test/complex_test/complex_test_snr{args.snr}.h5',
                             labels_path=f'{data_dir}/Test/test_labels.csv',
                             indexes=test_indexes)
 
