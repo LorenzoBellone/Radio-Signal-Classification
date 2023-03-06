@@ -36,7 +36,7 @@ def main(args):
         # 不分配测试集, 如果修改了ratio参数，需要修改reload_data为True重新加载一次数据集
         train_indexes, train_labels, val_indexes, val_labels = split_data(args.data_path, args.snr,
                                                                           ratio=[0.875, 0.125, 0.],
-                                                                          test=False, one_hot=False)
+                                                                          test=False, one_hot=False, seed=args.seed)
     print("using train data size: {}".format(len(train_labels)))
     print("using valid data size: {}".format(len(val_labels)))
     data_transform = {
